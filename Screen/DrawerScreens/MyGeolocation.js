@@ -1,89 +1,54 @@
+import React, { useState, useEffect } from 'react';
+import { Platform, Text, View, StyleSheet } from 'react-native';
+import Constants from 'expo-constants';
 import * as Location from 'expo-location';
-import * as Permissions from 'expo-permissions';
-import React, {useState, createRef} from 'react';
-import {
-  StyleSheet,
-  TextInput,
-  View,
-  Text,
-  ScrollView,
-  Image,
-  Keyboard,
-  TouchableOpacity,
-  KeyboardAvoidingView,
-} from 'react-native';
 
+export default function App() {
+  const [location, setLocation] = useState(null);
+  const [errorMsg, setErrorMsg] = useState(null);
 
+  useEffect(() => {
+    (async () => {
+      if (Platform.OS === 'android' && !Constants.isDevice) {
+        setErrorMsg(
+          'Oops, this will not work on Snack in an Android emulator. Try it on your device!'
+        );
+        return;
+      }
+      let { status } = await Location.requestPermissionsAsync();
+      if (status !== 'granted') {
+        setErrorMsg('Permission to access location was denied');
+        return;
+      }
 
-const MyGeolocation =  ()=>{debugger
-const [location,setLocation] = useState(null);
-const [geocode,setGeocode] = useState(null);
-const [errorMessage,setErrorMessage] = useState("");
+      let location = await Location.getCurrentPositionAsync({});
+      setLocation(location);
+    })();
+  }, []);
 
-const getLocationAsync = async () => {
-    let { status } = await Permissions.askAsync(Permissions.LOCATION);
-    if (status !== 'granted') {
-      this.setState({
-        errorMessage: 'Permission to access location was denied',
-      });
-    }
+  let text = 'Waiting..';
+  if (errorMsg) {
+    text = errorMsg;
+  } else if (location) {
+    text = JSON.stringify(location);
+  }
 
-    let location = await Location.getCurrentPositionAsync({accuracy:Location.Accuracy.Highest});
-    const { latitude , longitude } = location.coords
-    this.getGeocodeAsync({latitude, longitude})
-    this.setState({ location: {latitude, longitude}});
-
-  };
-
-  const getGeocodeAsync= async (location) => {debugger
-    let geocode = await Location.reverseGeocodeAsync(location)
-    this.setState({ geocode})
-  };
-  
-return (
-   
-      <View style={styles.overlay}>        
-        <Text style={styles.heading1}>{geocode  ? `${geocode[0].city}, ${geocode[0].isoCountryCode}` :""}</Text>
-        <Text style={styles.heading2}>{geocode ? geocode[0].street :""}</Text>
-        <Text style={styles.heading3}>{location ? `${location.latitude}, ${location.longitude}` :""}</Text>
-        <Text style={styles.heading2}>{errorMessage}</Text>
-      </View>
-   
+  return (
+    <View style={styles.container}>
+      <Text style={styles.paragraph}>{text}</Text>
+    </View>
   );
-
-};
-
-export default MyGeolocation;
+}
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#fff',
-      alignItems: 'center',
-      justifyContent: 'center',
-      
-    },
-    overlay:{
-      backgroundColor:"#00000070",
-      height:"100%",
-      width:"100%",
-      justifyContent:"center",
-      alignItems:"center"
-    },
-    heading1:{
-      color:"#fff",
-      fontWeight:"bold",
-      fontSize:30,
-      margin:20
-    },
-    heading2:{
-      color:"#fff",
-      margin:5,
-      fontWeight:"bold",
-      fontSize:15
-    },
-    heading3:{
-      color:"#fff",
-      margin:5
-    }
-  });
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  paragraph: {
+    fontSize: 18,
+    textAlign: 'center',
+  },
+});

@@ -16,9 +16,59 @@ import NavigationDrawerHeader from './Components/NavigationDrawerHeader';
 import MyGeolocation from './DrawerScreens/MyGeolocation';
 import MyPhoneContacts from './DrawerScreens/MyPhoneContacts';
 import MyCodeScanner from './DrawerScreens/CodeScanner';
+import BarCodeScanner from './DrawerScreens/BarCodeScanner';
+import MyToDos from './DrawerScreens/MyToDos';
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
+
+
+const MyToDosStack = ({navigation})=>{
+  return (
+  <Stack.Navigator initialRouteName="MyToDos">
+  <Stack.Screen 
+         name="MyToDos" 
+         component={MyToDos} 
+         options={{title:'My Task Notes',
+         headerLeft: () => (
+              <NavigationDrawerHeader navigationProps={navigation} />
+            ),
+            headerStyle: {
+              backgroundColor: '#307ecc', //Set Header color
+            },
+            headerTintColor: '#fff', //Set Header text color
+            headerTitleStyle: {
+              fontWeight: 'bold', //Set Header text style
+            },}}>
+  
+         </Stack.Screen>
+  </Stack.Navigator>
+  )}
+
+
+
+const BarCodeScannerStack = ({navigation})=>{
+  return (
+  <Stack.Navigator initialRouteName="BarCodeScanner">
+  <Stack.Screen 
+         name="BarCodeScanner" 
+         component={BarCodeScanner} 
+         options={{title:'Bar Code Scanner',
+         headerLeft: () => (
+              <NavigationDrawerHeader navigationProps={navigation} />
+            ),
+            headerStyle: {
+              backgroundColor: '#307ecc', //Set Header color
+            },
+            headerTintColor: '#fff', //Set Header text color
+            headerTitleStyle: {
+              fontWeight: 'bold', //Set Header text style
+            },}}>
+  
+         </Stack.Screen>
+  </Stack.Navigator>
+  )}
+  
 
 const CodeScannerStack = ({navigation})=>{
 return (
@@ -39,14 +89,8 @@ return (
           },}}>
 
        </Stack.Screen>
-
-
 </Stack.Navigator>
-)
-
-
-
-}
+)}
 
 const MyPhoneContactStack = ({navigation})=>{
   return (
@@ -166,7 +210,13 @@ const DrawerNavigatorRoutes = (props) => {
         name="homeScreenStack"
         options={{drawerLabel: 'Home'}}
         component={homeScreenStack}
-      />      
+      />  
+      <Drawer.Screen
+      name="MyToDosStack" 
+      options={{drawerLabel: 'TO DO!'}}
+        component={MyToDosStack}>
+
+        </Drawer.Screen>    
       <Drawer.Screen
       name="MyGeolocationStack" 
       options={{drawerLabel: 'Geolocation'}}
@@ -178,6 +228,11 @@ const DrawerNavigatorRoutes = (props) => {
       options={{drawerLabel: 'Contacts'}}
         component={MyPhoneContactStack}>
 
+        </Drawer.Screen>
+        <Drawer.Screen
+      name="BarCodeScannerStack" 
+      options={{drawerLabel: 'BarCodeScanner'}}
+        component={BarCodeScannerStack}>
         </Drawer.Screen>
         <Drawer.Screen
       name="CodeScannerStack" 
