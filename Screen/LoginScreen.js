@@ -1,8 +1,9 @@
+
 // Example of Splash, Login and Sign Up in React Native
 // https://aboutreact.com/react-native-login-and-signup/
 
 // Import React and Component
-import React, {useState, createRef} from 'react';
+import React, {useState,useEffect, createRef} from 'react';
 import {
   StyleSheet,
   TextInput,
@@ -15,9 +16,10 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 
-import AsyncStorage from '@react-native-community/async-storage';
-
 import Loader from './Components/Loader';
+//import api from './api/HansEndPoints';
+//import axios from 'axios';
+import api from '../api/userProfile';
 
 const LoginScreen = ({navigation}) => {
   const [userEmail, setUserEmail] = useState('');
@@ -26,73 +28,69 @@ const LoginScreen = ({navigation}) => {
   const [errortext, setErrortext] = useState('');
 
   const passwordInputRef = createRef();
+  /*
+//write a function to fetch suer profile  from json server
+const retrieveUserProfile = async () => {
+  const response = await api.get("/UserProfile");
+debugger
+  return response.data;
+}
+ */
+
+// Function Check Json server for authentication by retrieving users if exist
+
+const retrieveUser = async () => {
+  try{
+    const response = await api.get("/UserProfile/"+userEmail);
+    debugger
+      return response.data;
+  }catch(error){
+     alert(error  + "Here");
+  }
+
+}
+      
+// Function to get uuid 
+function uuid() {debugger
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
 
   const handleSubmitPress = async () => {debugger
     setErrortext('');
-    if (!userEmail) {
-      alert('Please fill Email');
-      return;
-    }
-    if (!userPassword) {
-      alert('Please fill Password');
-      return;
-    }
     setLoading(true);
-    //get email used in registering if Profile Exist
-    
-    let profile = await AsyncStorage.getItem('email');
-    if (profile ) {
-        setLoading(false);
-        navigation.replace('DrawerNavigationRoutes');
-        alert("Congratulations!");
-        return;
+    if (!userEmail || !userPassword ) {
+      alert('Please fill Email/Password');
+      return;
     }
-    setErrortext('You need to register');
-    setLoading(false);
-    // let dataToSend = {
-    //       user_email: userEmail,
-    //       user_password: userPassword
-    //     };
-    // let formBody = [];
-    // for (let key in dataToSend) {
-    //   let encodedKey = encodeURIComponent(key);
-    //   let encodedValue = encodeURIComponent(dataToSend[key]);
-    //   formBody.push(encodedKey + '=' + encodedValue);
-    // }
-    // formBody = formBody.join('&');
+    
+     const getUser = async ()=> {
+      const userProfile = await retrieveUser();
+      debugger
+      if(userProfile){
+        alert(userProfile.name);
+        console.log(userProfile);
+        console.log(uuid());
+        localStorage.clear();
+       // localStorage.setItem("name",userProfile.name);
+      //  console.log(localStorage.getItem("name"));
+        console.log(userProfile);
+        setLoading(false);
+      navigation.replace('DrawerNavigationRoutes');
+      alert("Congratulations!");
+       return;        
+      } else{
+        setErrortext('You need to register');
+        setLoading(false);
+      }
+    }
 
-    // fetch('https://aboutreact.herokuapp.com/login.php', {
-    //   method: 'POST',
-    //   body: formBody,
-    //   headers: {
-    //     //Header Defination
-    //     'Content-Type':
-    //       'application/x-www-form-urlencoded;charset=UTF-8',
-    //   },
-    // })
-    //   .then((response) => response.json())
-    //   .then((responseJson) => {
-    //     //Hide Loader
-    //     setLoading(false);
-    //     console.log(responseJson);
-    //     // If server response message same as Data Matched
-    //     if (responseJson.status == 1) {
-    //       AsyncStorage.setItem(
-    //         'user_id',
-    //          responseJson.data[0].user_id
-    //       );
-    //       console.log(responseJson.data[0].user_id);
-    //       navigation.replace('DrawerNavigationRoutes');
-    //     } else {
-    //       setErrortext('Please check your email id or password');
-    //       console.log('Please check your email id or password');
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     //Hide Loader
-    //     setLoading(false);
-    //     console.error(error);
-    //   });
+    getUser();
+    
+    debugger
+
   };
 
   return (

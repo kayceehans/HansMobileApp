@@ -16,6 +16,7 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import Loader from './Components/Loader';
+import api from '../api/userProfile';
 
 const RegisterScreen = (props) => {
   const [userName, setUserName] = useState('');
@@ -24,26 +25,50 @@ const RegisterScreen = (props) => {
   const [userPasswordConfirm, setuserPasswordConfirm] = useState('');
   const [loading, setLoading] = useState(false);
   const [errortext, setErrortext] = useState('');
-  const [
-    isRegistraionSuccess,
-    setIsRegistraionSuccess
-  ] = useState(false);
-
+  const [isRegistraionSuccess, setIsRegistraionSuccess ] = useState(false);
+  
   const nameInputRef = createRef();
   const emailInputRef = createRef();
   const PasswordInputRef = createRef();
   const PasswordConfirmInputRef = createRef();
 
+  const userDetails = { };
+  //function to add registration details to json server
+  /*
+  {statusText: "Created"
+    "id": "kazeem.hassan",
+    "name": "Kazeem Hassan",
+    "Email": "kazeem.hassan@outlook.com",
+    "Password": "test12345"
+  }
+  */
+  const registerProfile = async (userDetails) => {
+    const request = {
+      id: uuid(),
+      userDetails
+    }
+  const response = await api.post("/userProfile",request);
+  debugger
+   return response;
+  }
+
+
+  // Function to get uuid 
+function uuid() {debugger
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
+
+
   const handleSubmitButton = async () => {debugger
     setErrortext('');
-    if (!userName) {
-      alert('Please fill Name');
+    if (!userName || !userEmail) {
+      alert('Please fill Name/Email');
       return;
     }
-    if (!userEmail) {
-      alert('Please fill Email');
-      return;
-    }
+   
     if (!userPassword || userPassword != userPasswordConfirm) {
       alert('Password and Confrim Password cannot be enpty and mut be same');
       return;
@@ -52,79 +77,39 @@ const RegisterScreen = (props) => {
       alert('Please fill Connfirm Password');
       return;
     }
-    AsyncStorage.clear();
-    //Show Loader
-    setLoading(true);
-   
-    //Check if Profile Exist
-    
-    let profile = await AsyncStorage.getItem('email');
-     
-    // let parsed = JSON.parse(profile);  
-     alert(profile); 
-  //   AsyncStorage.clear();
-        if(profile!=null){ debugger
+    var check = localStorage.getItem("name");
+        if(check!=null){ debugger
         // props.navigation.replace('DrawerNavigationRoutes');
         setLoading(false);
         setErrortext('Already Registered');
         alert("already Registered...Please Login")
-         props.navigation.replace('DrawerNavigationRoutes');
+         props.navigation.replace('LoginScreen');
          return;
       }
+
+      
+    //Show Loader
+    setLoading(true);
+   
+    //Check if Profile Exist
+    userDetails.name= userName;
+    userDetails.Password= userPassword;
+    userDetails.Email = userEmail;
+     var user =registerProfile(userDetails);
+    debugger
+     alert(JSON.stringify(user)); 
+  
     //If it does not exist, save it. assemble it as an object
     
-   await AsyncStorage.setItem('name',JSON.stringify(userName));
-   await AsyncStorage.setItem('email',JSON.stringify(userEmail));
-   await AsyncStorage.setItem('password',JSON.stringify(userPassword)); 
+   localStorage.setItem('name',JSON.stringify(userName));
+   localStorage.setItem('email',JSON.stringify(userEmail));
+   localStorage.setItem('password',JSON.stringify(userPassword)); 
    setIsRegistraionSuccess(true);
-   setLoading(false);
-   
-//     var dataToSend = {
-//       user_name: userName,
-//       user_email: userEmail,
-//       user_Password: userPassword,     
-//     };
+   setLoading(false);      
 
-     
-//     var formBody = [];
-//     for (var key in dataToSend) {debugger
-//       var encodedKey = encodeURIComponent(key);
-//       var encodedValue = encodeURIComponent(dataToSend[key]);
-//       formBody.push(encodedKey + '=' + encodedValue);
-//     }
-//     formBody = formBody.join('&');
-
-//     fetch('https://aboutreact.herokuapp.com/register.php', {
-//       method: 'POST',
-//       body: formBody,
-//       headers: {
-//         //Header Defination
-//         'Content-Type': 
-//           'application/x-www-form-urlencoded;charset=UTF-8',
-//       },
-//     })
-//       .then((response) => response.json())
-//       .then((responseJson) => {
-//         //Hide Loader
-//         setLoading(false);
-//         console.log(responseJson);
-//         // If server response message same as Data Matched
-//         if (responseJson.status == 1) {
-//           setIsRegistraionSuccess(true);
-//           console.log(
-//             'Registration Successful. Please Login to proceed'
-//           );
-//         } else {
-//           setErrortext('Registration Unsuccessful');
-//         }
-//       })
-//       .catch((error) => {
-//         //Hide Loader
-//         setLoading(false);
-//         console.error(error);
-//       });
   };
   if (isRegistraionSuccess) {
+    const name = localStorage.getItem('name');
     return (
       <View
         style={{
@@ -141,7 +126,7 @@ const RegisterScreen = (props) => {
           }}
         />
         <Text style={styles.successTextStyle}>
-          Registration Successful
+          Registration Successful for {name}
         </Text>
         <TouchableOpacity
           style={styles.buttonStyle}

@@ -1,0 +1,36 @@
+{
+  "userProfile": [
+    {
+      "id": "kazeem.hassan",
+      "name": "Kazeem Hassan",
+      "Email": "kazeem.hassan@outlook.com",
+      "Password": "test12345"
+    },
+    {
+      "id": "kayceehans",
+      "name": "Kazeem Hassan",
+      "Email": "kayceehans@gmail.com",
+      "Password": "test12345"
+    },
+    {
+      "id": "a813c371-68ef-413f-88a2-06f20ba9ae10",
+      "userDetails": {}
+    },
+    {
+      "id": "ad90a21e-79e6-4b41-a288-5c55a9559c99",
+      "userDetails": {
+        "name": "kchans",
+        "Password": "123456",
+        "Email": "123456"
+      }
+    },
+    {
+      "id": "052ec3dc-ca1e-4449-995a-b3ea1df12710",
+      "userDetails": {
+        "name": "Hanz Dee",
+        "Password": "080",
+        "Email": "hans.Dee@gmail.com"
+      }
+    }
+  ]
+}

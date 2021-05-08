@@ -6,6 +6,7 @@ import React from 'react';
 import {View, Text, SafeAreaView} from 'react-native';
 
 const HomeScreen = () => {
+  const myname = localStorage.getItem("name");
   return (
     <SafeAreaView style={{flex: 1}}>
       <View style={{flex: 1, padding: 16}}>
@@ -23,7 +24,7 @@ const HomeScreen = () => {
             }}>
             Example of Splash, Login and Sign Up in React Native
             {'\n\n'}
-            This is the Home Screen
+            Welcome {myname}
           </Text>
         </View>
         <Text
